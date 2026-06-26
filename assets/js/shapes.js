@@ -11,6 +11,19 @@ import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.j
 
 const gsap = window.gsap;
 
+/* feature-shape tuning */
+const FEATURE_SCALE = 3.0;     // how big the promoted shape grows
+const AMBIENT_SCALE = 0.5;     // how far the other shapes recede
+const FEATURE_SPEED = 0.36;    // drift speed across the page (units/sec) — slow
+const FEATURE_EDGE  = 9.0;     // x at which the feature wraps to the other side
+
+/* deterministic hash so each route always maps to the same shape */
+function hashStr(s) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  return h;
+}
+
 /* bright, happy palette */
 const COLORS = {
   orange: 0xff7a3c,
@@ -150,18 +163,49 @@ export class FloatScene {
           z: (Math.random() - 0.5) * 0.28,
         },
         kick: 0,
+        curScale: spec.s,      // animated scale (lerps toward targetScale)
+        targetScale: spec.s,
+        isFeature: false,
+        driftVX: 0,            // horizontal drift, only the feature shape uses it
+        bobK: 1,               // bob multiplier (the big feature barely bobs)
       });
     }
   }
 
-  /* gentle Framer-style reshuffle on page change */
-  reflow() {
-    if (this.reduced || !gsap) return;
+  /* Promote one shape to a big, slow-moving "feature" for this route.
+     A different shape comes forth on every page; the rest recede. */
+  feature(routeKey = "home") {
+    const n = this.shapes.length;
+    const idx = hashStr(String(routeKey)) % n;
+    const dir = (hashStr("dir:" + routeKey) % 2) ? 1 : -1;      // drift left or right
+    const lane = ((hashStr("lane:" + routeKey) % 100) / 100 - 0.5) * 2.2; // vertical band
+
     this.shapes.forEach((sp, i) => {
-      const nx = sp.home.x + (Math.random() - 0.5) * sp.range;
-      const ny = sp.home.y + (Math.random() - 0.5) * sp.range;
-      gsap.to(sp.base, { x: nx, y: ny, duration: 1.15, ease: "power3.inOut", delay: i * 0.03 });
-      sp.kick = 3.2 + Math.random() * 3.2;       // a little spin burst that decays
+      if (i === idx) {
+        // the hero shape: grow forward, settle into a background lane, drift slowly
+        sp.isFeature = true;
+        sp.targetScale = FEATURE_SCALE;
+        sp.bobK = 0.3;
+        sp.base.z = -1.5;
+        sp.base.y = lane;
+        sp.driftVX = this.reduced ? 0 : dir * FEATURE_SPEED;
+        if (this.reduced) sp.base.x = 0;          // static, centred when motion is reduced
+      } else {
+        // everyone else recedes to soft background accents near the edges
+        sp.isFeature = false;
+        sp.targetScale = sp.s * AMBIENT_SCALE;
+        sp.bobK = 1;
+        sp.driftVX = 0;
+        sp.base.z = sp.home.z;
+        if (this.reduced || !gsap) {
+          sp.base.x = sp.home.x; sp.base.y = sp.home.y;
+        } else {
+          const nx = sp.home.x + (Math.random() - 0.5) * sp.range;
+          const ny = sp.home.y + (Math.random() - 0.5) * sp.range;
+          gsap.to(sp.base, { x: nx, y: ny, duration: 1.1, ease: "power3.inOut", delay: i * 0.02 });
+          sp.kick = 2.4 + Math.random() * 2.4;    // a little settle-spin
+        }
+      }
     });
   }
 
@@ -199,23 +243,38 @@ export class FloatScene {
     this.group.rotation.x = this.pointer.y * 0.08;
 
     for (const sp of this.shapes) {
+      // ease scale toward its target (grow into / recede from the feature role)
+      sp.curScale += (sp.targetScale - sp.curScale) * Math.min(1, dt * 3.2);
+      sp.mesh.scale.setScalar(sp.curScale);
+
+      // the feature shape drifts slowly across and wraps to the other side
+      if (sp.isFeature && sp.driftVX) {
+        sp.base.x += sp.driftVX * dt;
+        if (sp.base.x > FEATURE_EDGE) sp.base.x = -FEATURE_EDGE;
+        else if (sp.base.x < -FEATURE_EDGE) sp.base.x = FEATURE_EDGE;
+      }
+
       const h = Math.sin(t * sp.fs + sp.phase);
       const m = sp.mesh;
       m.position.x = sp.base.x;
       m.position.z = sp.base.z;
-      m.position.y = sp.base.y + h * sp.amp;
-      const spin = 1 + sp.kick;
+      m.position.y = sp.base.y + h * sp.amp * sp.bobK;
+      const spin = (1 + sp.kick) * (sp.isFeature ? 0.4 : 1);   // the big one spins gently
       m.rotation.x += sp.spin.x * spin * dt;
       m.rotation.y += sp.spin.y * spin * dt;
       m.rotation.z += sp.spin.z * spin * dt;
       sp.kick *= Math.max(0, 1 - dt * 2.2);
 
-      // drop shadow tracks beneath the shape; fades/shrinks as it lifts
-      const lift = (h + 1) / 2;
-      sp.shadow.position.set(sp.base.x, sp.base.y - 1.5 * sp.s, sp.base.z - 0.2);
-      sp.shadow.material.opacity = 0.18 * (1 - 0.45 * lift);
-      const ss = 1 - 0.14 * lift;
-      sp.shadow.scale.set(2.4 * sp.s * ss, 1.2 * sp.s * ss, 1);
+      // the feature floats free; the recessed shapes keep their soft drop shadow
+      if (sp.isFeature) {
+        sp.shadow.material.opacity = 0;
+      } else {
+        const lift = (h + 1) / 2;
+        sp.shadow.position.set(sp.base.x, sp.base.y - 1.5 * sp.curScale, sp.base.z - 0.2);
+        sp.shadow.material.opacity = 0.18 * (1 - 0.45 * lift) * (sp.curScale / sp.s);
+        const ss = 1 - 0.14 * lift;
+        sp.shadow.scale.set(2.4 * sp.curScale * ss, 1.2 * sp.curScale * ss, 1);
+      }
     }
   }
 }

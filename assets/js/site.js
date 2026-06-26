@@ -835,12 +835,13 @@ function closeMenu() {
 
 function render() {
   const route = (location.hash.replace(/^#\/?/, "").split("?")[0]) || "home";
+  const valid = ROUTES[route] ? route : "home";
   const page = ROUTES[route] || ROUTES.home;
   document.title = page.title + " · CRO AI Activation Community";
   main.innerHTML = `<div class="view">${page.html()}</div>`;
-  scene3d.reflow();                 // gentle reshuffle of the floating shapes
+  scene3d.feature(valid);           // a different shape comes forth & drifts per page
   window.scrollTo(0, 0);
-  setActive(ROUTES[route] ? route : "home");
+  setActive(valid);
   observeReveals();
   closeMenu();
 }

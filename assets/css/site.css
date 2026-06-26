@@ -134,10 +134,13 @@ img { max-width: 100%; display: block; }
 
 .block { margin: clamp(28px, 5.5vh, 60px) 0; }
 .panel {
-  border: 1px solid var(--line); background: var(--card);
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.62);
+  -webkit-backdrop-filter: blur(22px) saturate(1.3);
+  backdrop-filter: blur(22px) saturate(1.3);
   border-radius: 26px; padding: clamp(24px, 3.6vw, 44px); box-shadow: var(--shadow);
 }
-.panel.warm { background: linear-gradient(180deg, #fff4ee, #fdeef6); border-color: rgba(255,122,60,0.22); }
+.panel.warm { background: linear-gradient(180deg, rgba(255,244,238,0.74), rgba(253,238,246,0.74)); border-color: rgba(255,122,60,0.22); }
 
 .kicker {
   display: inline-flex; align-items: center; gap: 8px;
@@ -146,9 +149,9 @@ img { max-width: 100%; display: block; }
 .kicker .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 4px rgba(255,122,60,0.15); }
 
 h1, h2, h3 { font-family: var(--font-display); line-height: 1.07; font-weight: 700; color: var(--ink); }
-.block h2 { font-size: clamp(25px, 3.8vw, 42px); margin-bottom: 12px; letter-spacing: -0.01em; }
+.block h2 { font-size: clamp(25px, 3.8vw, 42px); margin-bottom: 12px; letter-spacing: -0.01em; text-shadow: 0 1px 22px rgba(255,255,255,0.7); }
 .block h3 { font-size: clamp(17px, 1.7vw, 21px); }
-.lead { color: var(--ink-dim); font-size: clamp(15px, 1.5vw, 18px); line-height: 1.6; max-width: 760px; }
+.lead { color: var(--ink-dim); font-size: clamp(15px, 1.5vw, 18px); line-height: 1.6; max-width: 760px; text-shadow: 0 1px 14px rgba(255,255,255,0.8); }
 .muted { color: var(--ink-soft); }
 .micro { font-size: 13px; color: var(--ink-soft); margin-top: 12px; }
 
@@ -181,7 +184,8 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.07; font-weight: 7
 /* ============================================================
    Hero
    ============================================================ */
-.hero { position: relative; text-align: center; padding-top: clamp(26px, 6vh, 64px); overflow: hidden; }
+.hero { position: relative; text-align: center; padding-top: clamp(26px, 6vh, 64px); overflow: hidden;
+  background: radial-gradient(58% 62% at 50% 42%, rgba(255,255,255,0.66), rgba(255,255,255,0) 72%); }
 .hero::before {
   content: "COMMUNITY"; position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%);
   font-family: var(--font-display); font-weight: 700; font-size: clamp(90px, 21vw, 300px);
@@ -192,8 +196,8 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.07; font-weight: 7
   border: 1px solid var(--line); background: #fff; color: var(--ink-dim); box-shadow: var(--shadow-sm);
   font-size: 12.5px; letter-spacing: .06em; margin-bottom: 22px;
 }
-.hero h1 { font-size: clamp(40px, 8.5vw, 92px); letter-spacing: -0.025em; }
-.hero .sub { margin: 20px auto 0; max-width: 700px; color: var(--ink-dim); font-size: clamp(15px, 1.7vw, 20px); line-height: 1.6; }
+.hero h1 { font-size: clamp(40px, 8.5vw, 92px); letter-spacing: -0.025em; text-shadow: 0 2px 36px rgba(255,255,255,0.7); }
+.hero .sub { margin: 20px auto 0; max-width: 700px; color: var(--ink-dim); font-size: clamp(15px, 1.7vw, 20px); line-height: 1.6; text-shadow: 0 1px 16px rgba(255,255,255,0.85); }
 .hero .emotional { margin: 30px auto; max-width: 640px; display: grid; gap: 6px;
   font-family: var(--font-display); font-weight: 600; font-size: clamp(18px, 2.4vw, 28px); color: var(--ink); }
 .hero .emotional span:last-child { background: var(--warm); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; }
@@ -208,7 +212,11 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.07; font-weight: 7
 .grid.c4 { grid-template-columns: repeat(4, 1fr); }
 
 .card {
-  border: 1px solid var(--line); background: var(--card); border-radius: 20px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.66);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  backdrop-filter: blur(16px) saturate(1.2);
+  border-radius: 20px;
   padding: 22px 20px; box-shadow: var(--shadow-sm);
   transition: transform .3s var(--ease-out), box-shadow .3s, border-color .3s;
 }

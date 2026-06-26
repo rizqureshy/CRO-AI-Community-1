@@ -37,9 +37,12 @@ assets/
   look; soft drop-shadow sprites sit beneath each shape and fade as it lifts.
 - Ten shapes are laid out around the frame edges so page content stays clear; each bobs
   on a sine, spins slowly, and follows the pointer with gentle parallax.
-- `reflow()` is called on every route change for a Framer-style reshuffle (a small
-  position drift + spin burst that settles).
-- Honours `prefers-reduced-motion` (skips the reshuffle).
+- **One shape per page comes forth.** `feature(route)` is called on every route change:
+  it deterministically promotes a different shape to a large, slow "feature" that drifts
+  across the page (wrapping at the edges) while the other nine recede (shrink + dim). The
+  content sits on frosted glass (translucent panels/cards + a hero veil) so it reads
+  cleanly over the moving shape.
+- Honours `prefers-reduced-motion` (the feature shape is placed but does not drift).
 
 ### Pages
 
