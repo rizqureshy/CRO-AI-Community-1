@@ -296,6 +296,29 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.07; font-weight: 7
 .cevent .what h3 { font-size: 15px; } .cevent .what p { font-size: 13px; color: var(--ink-soft); }
 .cevent .kind { font-size: 11px; padding: 4px 10px; border-radius: 100px; background: var(--chip); border: 1px solid var(--line); color: var(--ink-dim); }
 
+/* ---- AI Event Calendar (group-hosted) ---- */
+.evgroup { margin-top: 18px; border: 1px solid var(--line); border-left: 4px solid var(--ac);
+  border-radius: 18px; background: #fff; box-shadow: var(--shadow-sm); overflow: hidden; }
+.evhead { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 15px 18px; border-bottom: 1px solid var(--line); }
+.evhost { display: inline-flex; align-items: center; gap: 9px; font-family: var(--font-display); font-weight: 700; font-size: 15px; color: var(--ink); }
+.evhost .evdot { width: 11px; height: 11px; border-radius: 50%; background: var(--g); }
+.evblurb { font-size: 13px; color: var(--ink-soft); }
+.evlist { display: grid; }
+.eventcard { display: grid; grid-template-columns: 58px 1fr auto; gap: 16px; align-items: center; padding: 14px 18px; }
+.evlist .eventcard + .eventcard { border-top: 1px solid var(--line); }
+.evdate { flex: none; width: 58px; text-align: center; border-radius: 14px; padding: 8px 0; color: #fff; background: var(--g); }
+.evmon { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; font-weight: 600; opacity: .92; }
+.evday { display: block; font-family: var(--font-display); font-weight: 700; font-size: 22px; line-height: 1; }
+.evwhat h3 { font-size: 15px; }
+.evwhat p { font-size: 13px; color: var(--ink-soft); margin-top: 2px; }
+.evtime { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 12px; font-weight: 600; color: var(--ink-dim); }
+.evtime svg { width: 13px; height: 13px; fill: var(--ac); }
+.evformat { font-size: 11px; padding: 5px 11px; border-radius: 100px; background: var(--chip); border: 1px solid var(--line); color: var(--ink-dim); white-space: nowrap; }
+@media (max-width: 560px) {
+  .eventcard { grid-template-columns: 58px 1fr; }
+  .evformat { grid-column: 1 / -1; justify-self: start; }
+}
+
 /* ============================================================
    Forms
    ============================================================ */

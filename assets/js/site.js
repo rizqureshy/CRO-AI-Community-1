@@ -116,7 +116,7 @@ const formHTML = (fields, submit) =>
    Navigation
    ============================================================ */
 const PRIMARY = [
-  ["Home", "#/home"], ["Join the Community", "#/join"], ["Share Your Work", "#/share"],
+  ["Home", "#/home"], ["Join the Community", "#/join"], ["AI Event Calendar", "#/events"], ["Share Your Work", "#/share"],
   ["Submission Gallery", "#/gallery"], ["Learning Lane", "#/learning"], ["Expert Clinic", "#/clinic"],
   ["Certification Support", "#/certification"], ["AI Activation for Teams", "#/teams"],
   ["License & Access Help", "#/access"], ["Leaders Listening Post", "#/listening"],
@@ -470,6 +470,86 @@ ROUTES.join = {
       "Be practical: real examples beat theory.",
       "Be safe: follow Responsible AI guidance and keep customer data protected.",
     ]) + ctas([{ t: "Introduce Yourself", k: "cool", h: "#/story", svg: "share" }, { t: "Join the Teams Community", k: "primary", h: TEAMS_URL, svg: "users" }]),
+  }),
+};
+
+/* ---- AI Event Calendar (group-hosted AI upskilling) ---- */
+const EVENT_HOSTS = [
+  {
+    host: "GTM-Ops", full: "GTM Operations", ac: "#2b88ff",
+    grad: "linear-gradient(135deg,#2b88ff,#6b5bff)",
+    blurb: "AI for cleaner data, sharper forecasts, and faster operations.",
+    events: [
+      { m: "Jul", d: "08", time: "10:00 AM CT", title: "Copilot for Pipeline Hygiene", desc: "Automate CRM cleanup, dedupe records, and keep stages accurate with Ops-built prompt recipes.", format: "Hands-on Workshop" },
+      { m: "Jul", d: "22", time: "11:00 AM CT", title: "AI Forecasting & Data Storytelling", desc: "Turn messy pipeline data into a forecast narrative leaders actually trust.", format: "Lab" },
+    ],
+  },
+  {
+    host: "Marketing", full: "Marketing", ac: "#e3008c",
+    grad: "linear-gradient(135deg,#ff8a3d,#e3008c)",
+    blurb: "Generative AI for content, campaigns, and message testing at scale.",
+    events: [
+      { m: "Jul", d: "10", time: "1:00 PM CT", title: "Generative AI for Campaign Content", desc: "Draft, localize, and A/B test campaign copy at scale without losing brand voice.", format: "Workshop" },
+      { m: "Jul", d: "24", time: "1:00 PM CT", title: "AI Persona & Message Testing", desc: "Pressure-test messaging against buyer personas with AI before you launch.", format: "Clinic" },
+    ],
+  },
+  {
+    host: "Customer Success", full: "Customer Success", ac: "#18c8b6",
+    grad: "linear-gradient(135deg,#18c8b6,#2b88ff)",
+    blurb: "AI to spot risk early and prep customer conversations faster.",
+    events: [
+      { m: "Jul", d: "09", time: "11:00 AM CT", title: "AI for Churn Signals & Health Scores", desc: "Surface at-risk accounts early using AI summaries of usage, tickets, and sentiment.", format: "Workshop" },
+      { m: "Jul", d: "23", time: "11:00 AM CT", title: "Copilot for QBR Prep", desc: "Generate customer summaries and QBR decks in minutes instead of hours.", format: "Hands-on Lab" },
+    ],
+  },
+  {
+    host: "GTST", full: "Global Technical Sales Team", ac: "#9b4dff",
+    grad: "linear-gradient(135deg,#9b4dff,#6b5bff)",
+    blurb: "AI for sharper discovery, demos, and governed knowledge agents.",
+    events: [
+      { m: "Jul", d: "11", time: "9:00 AM CT", title: "AI for Technical Demos & Discovery", desc: "Build stronger discovery questions and demo scripts with an AI co-pilot at your side.", format: "Workshop" },
+      { m: "Jul", d: "25", time: "9:00 AM CT", title: "Governed Knowledge Agents with ACE", desc: "Stand up a governed ACE knowledge agent your team can trust in front of customers.", format: "Lab" },
+    ],
+  },
+];
+function hostCalendar() {
+  return EVENT_HOSTS.map((g) => `
+    <section class="evgroup reveal" style="--ac:${g.ac};--g:${g.grad}">
+      <header class="evhead">
+        <span class="evhost"><span class="evdot"></span>${g.host}</span>
+        <span class="evblurb">${g.full} · ${g.blurb}</span>
+      </header>
+      <div class="evlist">` + g.events.map((e) => `
+        <article class="eventcard">
+          <div class="evdate"><span class="evmon">${e.m}</span><span class="evday">${e.d}</span></div>
+          <div class="evwhat"><h3>${e.title}</h3><p>${e.desc}</p><span class="evtime">${ic("calendar")} ${e.time}</span></div>
+          <span class="evformat">${e.format}</span>
+        </article>`).join("") + `
+      </div>
+    </section>`).join("");
+}
+ROUTES.events = {
+  title: "AI Event Calendar", formation: "clusters:4",
+  html: () => block({
+    kicker: "AI Event Calendar", title: `AI upskilling, <span class="gradient-text">hosted by your teams</span>`,
+    lead: "A rotating calendar of AI upskilling events — each one designed and hosted by a CRO team for the work they actually do. Drop into any session; everyone across the community is welcome.",
+    inner: pills(["GTM-Ops", "Marketing", "Customer Success", "GTST"])
+      + ctas([{ t: "Join the Teams Community", k: "primary", h: TEAMS_URL, svg: "users" }, { t: "See the Community Rhythm", k: "cool", h: "#/calendar", svg: "calendar" }]),
+  })
+  + block({
+    kicker: "Upcoming sessions", title: "Who's hosting what",
+    lead: "Each team brings AI upskilling relevant to its motion — from pipeline ops to campaign content, customer health, and technical discovery.",
+    inner: hostCalendar(),
+  })
+  + block({
+    panel: true, warm: true, title: "Want your team to host a session?",
+    lead: "If your team has an AI workflow worth teaching, propose a session and we'll help you shape it, schedule it, and bring an audience.",
+    inner: formHTML([
+      { l: "Your name", t: "text" }, { l: "Host team", t: "select", opts: ["GTM-Ops", "Marketing", "Customer Success", "GTST", "Another team"] },
+      { l: "Session title", t: "text" },
+      { l: "Format", t: "select", opts: ["Workshop", "Hands-on Lab", "Clinic", "Demo", "Office hours"] },
+      { l: "What will people learn?", t: "textarea", ph: "The AI skill or workflow your team will teach…" },
+    ], "Propose an Event"),
   }),
 };
 
